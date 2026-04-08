@@ -1,58 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Price Calculator</title>
+</head>
+<body>
+
 <div style="max-width:400px;margin:0 auto;padding:1.5rem 1rem;display:flex;flex-direction:column;gap:1.2rem;">
-  <h2 style="font-size:18px;font-weight:500;margin:0;color:var(--color-text-primary);">Price calculator</h2>
+  <h2>Price calculator</h2>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Length</label>
-    <input type="number" id="length" min="0" placeholder="0" oninput="calc()" style="width:100%;box-sizing:border-box;">
+  <!-- LENGTH -->
+  <div>
+    <label>Length</label><br>
+    Inch: <input type="number" style="width:70px;" id="length_in" oninput="sync('length','in')">
+    mm: <input type="number" style="width:70px;" id="length_mm" oninput="sync('length','mm')">
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Width</label>
-    <input type="number" id="width" min="0" placeholder="0" oninput="calc()" style="width:100%;box-sizing:border-box;">
+  <!-- WIDTH -->
+  <div>
+    <label>Width</label><br>
+    Inch: <input type="number" style="width:70px;" id="width_in" oninput="sync('width','in')">
+    mm: <input type="number" style="width:70px;" id="width_mm" oninput="sync('width','mm')">
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Height</label>
-    <input type="number" id="height" min="0" placeholder="0" oninput="calc()" style="width:100%;box-sizing:border-box;">
+  <!-- HEIGHT -->
+  <div>
+    <label>Height</label><br>
+    Inch: <input type="number" style="width:70px;" id="height_in" oninput="sync('height','in')">
+    mm: <input type="number" style="width:70px;" id="height_mm" oninput="sync('height','mm')">
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Effort</label>
-    <select id="effort" onchange="calc()" style="width:100%;box-sizing:border-box;">
-      <option value="0.15">Low</option>
-      <option value="0.18" selected>Medium</option>
-      <option value="0.20">Hard</option>
+  <!-- EFFORT -->
+  <div>
+    <label>Effort</label>
+    <select id="effort" onchange="calc()">
+      <option value="0.15">Minimum</option>
+      <option value="0.18">Medium</option>
+      <option value="0.20" selected>Normal</option>
+      <option value="0.24">Sample</option>
     </select>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Custom multiplier <span style="color:var(--color-text-tertiary);">(overrides effort above)</span></label>
-    <input type="number" id="custom-mult" min="0" step="0.01" placeholder="e.g. 0.22" oninput="calc()" style="width:100%;box-sizing:border-box;">
-    <span id="mult-indicator" style="font-size:12px;color:var(--color-text-tertiary);display:none;"></span>
+  <!-- CUSTOM MULTIPLIER -->
+  <div>
+    <label>Custom multiplier</label>
+    <input type="number" style="width:90px;" id="custom-mult" step="0.01" oninput="calc()">
+    <span id="mult-indicator" style="display:none;"></span>
   </div>
 
-  <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:1rem;display:flex;flex-direction:column;gap:0.4rem;">
-    <span style="font-size:13px;color:var(--color-text-secondary);">Price per item</span>
-    <span id="unit-price" style="font-size:28px;font-weight:500;color:var(--color-text-primary);">—</span>
+  <!-- UNIT PRICE -->
+  <div>
+    <span>Price per item</span><br>
+    <span id="unit-price">—</span>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:0.6rem;">
-    <label style="font-size:13px;color:var(--color-text-secondary);">Number of items (optional)</label>
-    <input type="number" id="qty" min="1" placeholder="e.g. 10" oninput="calc()" style="width:100%;box-sizing:border-box;">
+  <!-- QTY -->
+  <div>
+    <label>Quantity</label>
+    <input type="number" style="width:70px;" id="qty" oninput="calc()">
   </div>
 
-  <div id="total-block" style="display:none;border-top:0.5px solid var(--color-border-tertiary);padding-top:1rem;flex-direction:column;gap:0.4rem;">
-    <span style="font-size:13px;color:var(--color-text-secondary);">Total price</span>
-    <span id="total-price" style="font-size:28px;font-weight:500;color:var(--color-text-primary);">—</span>
+  <!-- TOTAL -->
+  <div id="total-block" style="display:none;">
+    <span>Total price</span><br>
+    <span id="total-price">—</span>
   </div>
 </div>
 
 <script>
+function mmToIn(mm) {
+  return mm / 25.4;
+}
+
+function inToMm(inch) {
+  return inch * 25.4;
+}
+
+// Sync function
+function sync(field, type) {
+  var inEl = document.getElementById(field + '_in');
+  var mmEl = document.getElementById(field + '_mm');
+
+  if (type === 'in') {
+    var val = parseFloat(inEl.value);
+    if (!isNaN(val)) {
+      mmEl.value = (val * 25.4).toFixed(2);
+    }
+  } else {
+    var val = parseFloat(mmEl.value);
+    if (!isNaN(val)) {
+      inEl.value = (val / 25.4).toFixed(3);
+    }
+  }
+
+  calc();
+}
+
 function calc() {
-  var l = parseFloat(document.getElementById('length').value) || 0;
-  var w = parseFloat(document.getElementById('width').value) || 0;
-  var h = parseFloat(document.getElementById('height').value) || 0;
+  var l = parseFloat(document.getElementById('length_in').value) || 0;
+  var w = parseFloat(document.getElementById('width_in').value) || 0;
+  var h = parseFloat(document.getElementById('height_in').value) || 0;
   var q = parseFloat(document.getElementById('qty').value);
+
   var customVal = document.getElementById('custom-mult').value.trim();
   var indicator = document.getElementById('mult-indicator');
 
@@ -67,6 +116,7 @@ function calc() {
   }
 
   var vol = l * w * h;
+
   var unitEl = document.getElementById('unit-price');
   var totalBlock = document.getElementById('total-block');
   var totalEl = document.getElementById('total-price');
@@ -74,8 +124,9 @@ function calc() {
   if (vol > 0) {
     var unit = vol * m;
     unitEl.textContent = unit.toFixed(2);
+
     if (q > 0) {
-      totalBlock.style.display = 'flex';
+      totalBlock.style.display = 'block';
       totalEl.textContent = (unit * q).toFixed(2);
     } else {
       totalBlock.style.display = 'none';
@@ -86,3 +137,6 @@ function calc() {
   }
 }
 </script>
+
+</body>
+</html>
