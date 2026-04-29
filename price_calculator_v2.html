@@ -34,10 +34,10 @@
   <div>
     <label>Effort</label>
     <select id="effort" onchange="calc()">
-      <option value="0.15">Minimum</option>
-      <option value="0.18">Medium</option>
-      <option value="0.20" selected>Normal</option>
-      <option value="0.24">Sample</option>
+      <option value="0.15">Minimum 0.15</option>
+      <option value="0.18">Medium 0.18</option>
+      <option value="0.20" selected>Normal 0.20</option>
+      <option value="0.24">Sample 0.24</option>
     </select>
   </div>
 
@@ -107,7 +107,7 @@ function calc() {
 
   var m;
   if (customVal !== '' && !isNaN(parseFloat(customVal))) {
-    m = parseFloat(customVal);
+    m = parseFloat(customVal)/ 100;
     indicator.textContent = 'Using custom multiplier ×' + m;
     indicator.style.display = 'block';
   } else {
